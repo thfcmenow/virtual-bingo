@@ -1,0 +1,16 @@
+{
+  "id": "session-1792156412850",
+  "sessionStartTime": "2026-10-16T13:13:32.850Z",
+  "calledNumbers": [
+    28,
+    65,
+    45,
+    60
+  ],
+  "currentBall": {
+    "number": 60,
+    "letter": "G",
+    "timestamp": 1792156815700
+  },
+  "totalBallsPossible": 75
+}

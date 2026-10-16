@@ -1,0 +1,172 @@
+[
+  {
+    "id": "claim_1792156833942_jln1",
+    "playerId": "player_6had78",
+    "playerName": "David Russell",
+    "timestamp": 1792156833942,
+    "status": "rejected",
+    "patternName": "Unconfirmed Claim",
+    "winningNumbers": [],
+    "isLegitBingo": false,
+    "uncalledDaubCount": 0,
+    "cardSnapshot": [
+      [
+        6,
+        24,
+        36,
+        60,
+        74
+      ],
+      [
+        15,
+        23,
+        31,
+        56,
+        67
+      ],
+      [
+        5,
+        18,
+        0,
+        51,
+        61
+      ],
+      [
+        1,
+        19,
+        41,
+        53,
+        75
+      ],
+      [
+        14,
+        27,
+        40,
+        54,
+        69
+      ]
+    ],
+    "daubedSnapshot": [
+      [
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    ]
+  },
+  {
+    "id": "claim_1792156412889_9s00",
+    "playerId": "player_omvdca",
+    "playerName": "Bingo Master Jane",
+    "timestamp": 1792156412889,
+    "status": "verified",
+    "patternName": "Unconfirmed Claim",
+    "winningNumbers": [],
+    "isLegitBingo": false,
+    "uncalledDaubCount": 1,
+    "cardSnapshot": [
+      [
+        4,
+        19,
+        33,
+        56,
+        67
+      ],
+      [
+        9,
+        25,
+        44,
+        46,
+        73
+      ],
+      [
+        14,
+        28,
+        0,
+        58,
+        71
+      ],
+      [
+        12,
+        24,
+        37,
+        48,
+        68
+      ],
+      [
+        1,
+        27,
+        45,
+        49,
+        63
+      ]
+    ],
+    "daubedSnapshot": [
+      [
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    ]
+  }
+]

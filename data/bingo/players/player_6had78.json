@@ -1,0 +1,81 @@
+{
+  "id": "player_6had78",
+  "name": "David Russell",
+  "card": [
+    [
+      6,
+      24,
+      36,
+      60,
+      74
+    ],
+    [
+      15,
+      23,
+      31,
+      56,
+      67
+    ],
+    [
+      5,
+      18,
+      0,
+      51,
+      61
+    ],
+    [
+      1,
+      19,
+      41,
+      53,
+      75
+    ],
+    [
+      14,
+      27,
+      40,
+      54,
+      69
+    ]
+  ],
+  "daubed": [
+    [
+      false,
+      false,
+      false,
+      true,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      true,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  ],
+  "createdAt": "2026-10-16T13:17:52.759Z",
+  "avatarSeed": "zoq1",
+  "color": "#3b82f6"
+}

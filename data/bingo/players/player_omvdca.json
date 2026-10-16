@@ -1,0 +1,81 @@
+{
+  "id": "player_omvdca",
+  "name": "Bingo Master Jane",
+  "card": [
+    [
+      4,
+      19,
+      33,
+      56,
+      67
+    ],
+    [
+      9,
+      25,
+      44,
+      46,
+      73
+    ],
+    [
+      14,
+      28,
+      0,
+      58,
+      71
+    ],
+    [
+      12,
+      24,
+      37,
+      48,
+      68
+    ],
+    [
+      1,
+      27,
+      45,
+      49,
+      63
+    ]
+  ],
+  "daubed": [
+    [
+      true,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      true,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  ],
+  "createdAt": "2026-10-16T13:13:32.858Z",
+  "avatarSeed": "5ycw",
+  "color": "#3b82f6"
+}
