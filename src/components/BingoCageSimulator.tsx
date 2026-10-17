@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BingoBall } from '@/types/bingo';
 import { BingoBallBadge } from './BingoBallBadge';
-import { Sparkles, Volume2, VolumeX, Mic, MicOff, Play, Pause, RotateCw } from 'lucide-react';
+import { Sparkles, Volume2, VolumeX, Mic, MicOff, RotateCw } from 'lucide-react';
 
 interface BingoCageSimulatorProps {
   currentBall: BingoBall | null;
@@ -26,16 +26,7 @@ export const BingoCageSimulator: React.FC<BingoCageSimulatorProps> = ({
   onToggleVoice,
   allBallsDrawn,
 }) => {
-  const [isSpinning, setIsSpinning] = useState(false);
-
-  // When isDrawing changes to true, trigger cage tumbling animation
-  useEffect(() => {
-    if (isDrawing) {
-      setIsSpinning(true);
-      const timer = setTimeout(() => setIsSpinning(false), 900);
-      return () => clearTimeout(timer);
-    }
-  }, [isDrawing]);
+  const isSpinning = isDrawing;
 
   return (
     <div className="w-full bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl border border-slate-800 p-6 shadow-2xl relative overflow-hidden">

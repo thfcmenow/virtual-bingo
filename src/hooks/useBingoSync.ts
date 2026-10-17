@@ -13,13 +13,16 @@ interface UseBingoSyncOptions {
 export function useBingoSync(options: UseBingoSyncOptions = {}) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [claims, setClaims] = useState<BingoClaim[]>([]);
-  const [dataDir, setDataDir] = useState<string>('/data/bingo');
+  const [storageBackend, setStorageBackend] = useState('Neon Postgres');
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [lastEventTime, setLastEventTime] = useState<number>(Date.now());
+  const [lastEventTime, setLastEventTime] = useState(0);
 
   // Store options in ref to avoid re-triggering effect on every render
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
 
   // Manual fallback refresh
   const refresh = useCallback(async () => {
@@ -29,7 +32,7 @@ export function useBingoSync(options: UseBingoSyncOptions = {}) {
         const data = await res.json();
         setGameState(data.gameState);
         setClaims(data.claims || []);
-        if (data.dataDir) setDataDir(data.dataDir);
+        if (data.storageBackend) setStorageBackend(data.storageBackend);
       }
     } catch (err) {
       console.warn('[useBingoSync] Failed to fetch game state:', err);
@@ -60,7 +63,7 @@ export function useBingoSync(options: UseBingoSyncOptions = {}) {
               case 'INIT': {
                 setGameState(message.data.gameState);
                 setClaims(message.data.claims || []);
-                if (message.data.dataDir) setDataDir(message.data.dataDir);
+                if (message.data.storageBackend) setStorageBackend(message.data.storageBackend);
                 break;
               }
               case 'BALL_DRAWN': {
@@ -134,12 +137,15 @@ export function useBingoSync(options: UseBingoSyncOptions = {}) {
     };
 
     // Initial fetch in case SSE takes a moment
-    refresh();
+    const initialFetchTimeout = setTimeout(() => {
+      void refresh();
+    }, 0);
     connect();
 
     return () => {
       isCancelled = true;
       clearTimeout(reconnectTimeout);
+      clearTimeout(initialFetchTimeout);
       if (eventSource) {
         eventSource.close();
       }
@@ -149,7 +155,7 @@ export function useBingoSync(options: UseBingoSyncOptions = {}) {
   return {
     gameState,
     claims,
-    dataDir,
+    storageBackend,
     isConnected,
     lastEventTime,
     refresh,

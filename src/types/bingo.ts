@@ -46,11 +46,34 @@ export type SSEEventType =
   | 'CLAIM_UPDATED'
   | 'PING';
 
-export interface SSEMessage {
-  type: SSEEventType;
-  data: any;
-  timestamp: number;
+export interface SSEEventDataMap {
+  INIT: {
+    gameState: GameState;
+    claims: BingoClaim[];
+    storageBackend: string;
+  };
+  BALL_DRAWN: {
+    ball: BingoBall;
+    calledNumbers: number[];
+    gameState: GameState;
+  };
+  GAME_RESET: {
+    message: string;
+    gameState: GameState;
+    timestamp: number;
+  };
+  BINGO_CLAIMED: BingoClaim;
+  CLAIM_UPDATED: BingoClaim;
+  PING: Record<string, never>;
 }
+
+export type SSEMessage = {
+  [Type in SSEEventType]: {
+    type: Type;
+    data: SSEEventDataMap[Type];
+    timestamp: number;
+  };
+}[SSEEventType];
 
 export function getLetterForNumber(num: number): BingoLetter {
   if (num >= 1 && num <= 15) return 'B';

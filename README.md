@@ -8,7 +8,7 @@ A full-stack, real-time Virtual Bingo web application built with **Next.js (App 
 
 ### 1. Host / Admin View (`/admin`)
 - **Interactive Tumbler Machine**: Visual cage spinner with 3D metallic wireframe and ball tumbling animations.
-- **Manual "Draw Next Ball" Button**: Randomly picks an uncalled number (1–75), maps to B-I-N-G-O letters, persists to `/data/bingo/game-state.json`, and broadcasts to all clients.
+- **Manual "Draw Next Ball" Button**: Randomly picks an uncalled number (1–75), maps to B-I-N-G-O letters, persists to Neon Postgres, and broadcasts to all clients.
 - **Master Board (1–75)**: High-contrast, color-coded visual matrix showing all called numbers and pulsing indicator for the latest ball drawn.
 - **Real-Time Bingo Claims Alert Panel**: Displays instant notifications with alert chimes when a player claims "BINGO!", with timestamp, player ID, and an **"Inspect Card"** audit modal showing the player's actual marked numbers against called balls.
 - **One-Click Claim Actions**: Verify & confirm, reject, or clear claims.
@@ -24,7 +24,7 @@ A full-stack, real-time Virtual Bingo web application built with **Next.js (App 
   - **N**: 31–45 (Center space is **★ FREE ★** and pre-daubed)
   - **G**: 46–60
   - **O**: 61–75
-  - Persisted to `/data/bingo/players/[playerId].json`.
+  - Persisted in Neon Postgres.
 - **Interactive Tactile Daubing**:
   - Tap or click numbers to stamp ink marks on the card.
   - Dauber ink color picker (Ruby Red, Neon Blue, Emerald, Purple Ink, Hot Pink).
@@ -36,25 +36,25 @@ A full-stack, real-time Virtual Bingo web application built with **Next.js (App 
 - **Celebratory "BINGO!" Button**:
   - Prominent 3D pulsating button.
   - Multi-angle confetti explosion (`canvas-confetti`) and victory fanfare chime.
-  - Submits claim to `/data/bingo/claims.json` and immediately alerts the host screen.
+  - Submits the claim to Neon Postgres and immediately alerts the host screen.
 
 ---
 
 ## 🗄️ Data Persistence Architecture
 
-All state is stored as standard JSON files directly using Node.js `fs/promises`:
-- `/data/bingo/game-state.json`: Session metadata, called balls array, current ball spotlight.
-- `/data/bingo/players/[playerId].json`: Player info, 5x5 card layout, and 5x5 daubed matrix.
-- `/data/bingo/claims.json`: Log of all submitted claims with snapshots for auditing.
+Game state, player cards, daubs, and claims are persisted in Neon Postgres through Drizzle ORM:
+- `bingo_game_state`: the current session and called balls, stored as JSONB.
+- `bingo_players`: player profiles, cards, and daub matrices, stored as JSONB.
+- `bingo_claims`: claims and audit snapshots, with indexed player and timestamp fields.
 
-> **Directory Handling**: The app targets `/data/bingo/` and automatically creates all required subdirectories. If running on an OS with read-only root permissions (such as macOS APFS sealed system volume), it seamlessly falls back to `<workspace>/data/bingo/` or uses the `BINGO_DATA_DIR` environment variable.
+The app uses the pooled `DATABASE_URL` for runtime queries. Drizzle migrations use the direct `DATABASE_URL_UNPOOLED` connection. Neon CLI writes both to the ignored `.env.local` file; on Render, add `DATABASE_URL` as a secret environment variable. Apply schema migrations with `npm run db:migrate` and generate new migration files with `npm run db:generate`.
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ (tested on Node v24)
+- Node.js 20.9+ (tested on Node v24)
 - npm 9+
 
 ### Installation & Run

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { registerSSEClient } from '@/lib/sse';
-import { getGameState, getClaims, getBingoDataDir } from '@/lib/storage';
+import { getGameState, getClaims, getStorageBackend } from '@/lib/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,18 +28,14 @@ export async function GET(req: NextRequest) {
   // Send immediate initial sync state to connecting client
   (async () => {
     try {
-      const [gameState, claims, dataDir] = await Promise.all([
-        getGameState(),
-        getClaims(),
-        getBingoDataDir(),
-      ]);
+      const [gameState, claims] = await Promise.all([getGameState(), getClaims()]);
 
       const initPayload = {
         type: 'INIT',
         data: {
           gameState,
           claims,
-          dataDir,
+          storageBackend: getStorageBackend(),
         },
         timestamp: Date.now(),
       };

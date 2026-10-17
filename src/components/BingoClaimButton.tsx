@@ -69,9 +69,9 @@ export const BingoClaimButton: React.FC<BingoClaimButtonProps> = ({
       }
 
       onClaimSuccess?.(data.claim);
-    } catch (err: any) {
-      console.error('Error claiming bingo:', err);
-      setErrorMessage(err.message || 'Error sending claim');
+    } catch (error: unknown) {
+      console.error('Error claiming bingo:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Error sending claim');
     } finally {
       setIsSubmitting(false);
     }

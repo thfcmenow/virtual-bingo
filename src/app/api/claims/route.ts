@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       daubedSnapshot: player.daubed,
     };
 
-    // Save claim directly to /data/bingo/claims.json
+    // Persist the claim and its audit snapshot in Postgres
     await saveClaim(claim);
 
     // Broadcast immediately to Admin and all clients via SSE

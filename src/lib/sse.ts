@@ -1,10 +1,9 @@
-import { SSEEventType, SSEMessage } from '@/types/bingo';
+import { SSEEventDataMap, SSEEventType, SSEMessage } from '@/types/bingo';
 
 type ClientController = ReadableStreamDefaultController<Uint8Array>;
 
 // Global singleton to survive hot-reloads in development
 declare global {
-  // eslint-disable-next-line no-var
   var __sseClients: Set<ClientController> | undefined;
 }
 
@@ -30,12 +29,15 @@ export function registerSSEClient(controller: ClientController): () => void {
 /**
  * Broadcasts an event to all connected SSE clients.
  */
-export function broadcastSSE(type: SSEEventType, data: any): void {
-  const message: SSEMessage = {
+export function broadcastSSE<Type extends SSEEventType>(
+  type: Type,
+  data: SSEEventDataMap[Type]
+): void {
+  const message = {
     type,
     data,
     timestamp: Date.now(),
-  };
+  } as SSEMessage;
 
   const payload = `event: message\ndata: ${JSON.stringify(message)}\n\n`;
   const encoded = encoder.encode(payload);
@@ -45,7 +47,7 @@ export function broadcastSSE(type: SSEEventType, data: any): void {
   for (const client of clients) {
     try {
       client.enqueue(encoded);
-    } catch (err) {
+    } catch {
       deadClients.push(client);
     }
   }
