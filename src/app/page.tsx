@@ -1,21 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useBingoSync } from '@/hooks/useBingoSync';
 import { Navbar } from '@/components/Navbar';
 import { BingoCardGrid } from '@/components/BingoCardGrid';
 import { BingoClaimButton } from '@/components/BingoClaimButton';
 import { BingoBallBadge } from '@/components/BingoBallBadge';
-import { Player, BingoBall, BingoClaim } from '@/types/bingo';
+import { Player, BingoClaim } from '@/types/bingo';
 import { playBallDrawSound, playVictoryFanfare } from '@/lib/sounds';
 import {
   Sparkles,
   User,
   History,
-  RotateCw,
-  Award,
-  CheckCircle,
-  HelpCircle,
   Volume2,
   VolumeX,
   PlusCircle,
@@ -29,19 +25,18 @@ export default function PlayerPage() {
   const [isLoadingPlayer, setIsLoadingPlayer] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [activeClaim, setActiveClaim] = useState<BingoClaim | null>(null);
+  const [submittedClaim, setSubmittedClaim] = useState<BingoClaim | null>(null);
 
   // SSE real-time state sync
   const { gameState, claims, dataDir, isConnected } = useBingoSync({
-    onBallDrawn: (ball: BingoBall) => {
+    onBallDrawn: () => {
       if (soundEnabled) playBallDrawSound();
     },
     onGameReset: () => {
-      setActiveClaim(null);
+      setSubmittedClaim(null);
     },
     onClaimUpdated: (claim: BingoClaim) => {
       if (player && claim.playerId === player.id) {
-        setActiveClaim(claim);
         if (claim.status === 'verified' && soundEnabled) {
           playVictoryFanfare();
         }
@@ -51,33 +46,37 @@ export default function PlayerPage() {
 
   const calledNumbers = gameState?.calledNumbers || [];
   const currentBall = gameState?.currentBall || null;
-
-  // Check active claim for this player
-  useEffect(() => {
-    if (player && claims.length > 0) {
-      const myClaim = claims.find((c) => c.playerId === player.id);
-      if (myClaim) {
-        setActiveClaim(myClaim);
-      }
-    }
-  }, [player, claims]);
+  const activeClaim = player
+    ? claims.find((claim) => claim.playerId === player.id) ??
+      (submittedClaim?.playerId === player.id ? submittedClaim : null)
+    : null;
 
   // Load existing player from localStorage on mount
   useEffect(() => {
-    const savedId = localStorage.getItem(LOCAL_STORAGE_PLAYER_KEY);
-    if (savedId) {
-      fetch(`/api/players/${savedId}`)
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data) => {
-          if (data?.player) {
-            setPlayer(data.player);
-          }
-        })
-        .catch((err) => console.warn('Could not restore player:', err))
-        .finally(() => setIsLoadingPlayer(false));
-    } else {
-      setIsLoadingPlayer(false);
-    }
+    let isCancelled = false;
+
+    const restorePlayer = async () => {
+      const savedId = localStorage.getItem(LOCAL_STORAGE_PLAYER_KEY);
+      if (!savedId) return;
+
+      try {
+        const res = await fetch(`/api/players/${savedId}`);
+        const data = res.ok ? await res.json() : null;
+        if (!isCancelled && data?.player) {
+          setPlayer(data.player);
+        }
+      } catch (error) {
+        console.warn('Could not restore player:', error);
+      }
+    };
+
+    void restorePlayer().finally(() => {
+      if (!isCancelled) setIsLoadingPlayer(false);
+    });
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   // Register / Join game
@@ -99,7 +98,7 @@ export default function PlayerPage() {
 
       setPlayer(data.player);
       localStorage.setItem(LOCAL_STORAGE_PLAYER_KEY, data.player.id);
-      setActiveClaim(null);
+      setSubmittedClaim(null);
     } catch (err) {
       console.error('Registration failed:', err);
     } finally {
@@ -175,7 +174,7 @@ export default function PlayerPage() {
   const handleNewCard = () => {
     localStorage.removeItem(LOCAL_STORAGE_PLAYER_KEY);
     setPlayer(null);
-    setActiveClaim(null);
+    setSubmittedClaim(null);
   };
 
   return (
@@ -344,7 +343,7 @@ export default function PlayerPage() {
               <BingoClaimButton
                 playerId={player.id}
                 activeClaim={activeClaim}
-                onClaimSuccess={(claim) => setActiveClaim(claim)}
+                onClaimSuccess={setSubmittedClaim}
               />
             </div>
           </div>

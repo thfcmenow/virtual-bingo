@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BingoClaim, BingoLetter } from '@/types/bingo';
 import { Bell, CheckCircle2, XCircle, Trash2, Eye, Award, AlertTriangle, ShieldCheck } from 'lucide-react';
 
@@ -14,12 +14,19 @@ export const ClaimsPanel: React.FC<ClaimsPanelProps> = ({
   calledNumbers,
 }) => {
   const [inspectingClaim, setInspectingClaim] = useState<BingoClaim | null>(null);
+  const [now, setNow] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const pendingClaims = claims.filter((c) => c.status === 'pending');
   const calledSet = new Set(calledNumbers);
 
   const formatTimestamp = (ts: number) => {
-    const seconds = Math.floor((Date.now() - ts) / 1000);
+    if (now === 0) return 'Just now';
+    const seconds = Math.floor((now - ts) / 1000);
     if (seconds < 5) return 'Just now';
     if (seconds < 60) return `${seconds}s ago`;
     const minutes = Math.floor(seconds / 60);

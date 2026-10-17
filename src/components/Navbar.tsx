@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sparkles, Radio, Shield, User, HardDrive } from 'lucide-react';
+import { Shield, User, HardDrive } from 'lucide-react';
 
 interface NavbarProps {
   isConnected?: boolean;

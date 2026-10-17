@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useBingoSync } from '@/hooks/useBingoSync';
 import { Navbar } from '@/components/Navbar';
 import { BingoCageSimulator } from '@/components/BingoCageSimulator';
@@ -12,12 +12,10 @@ import {
   playVictoryFanfare,
   speakBall,
 } from '@/lib/sounds';
-import { BingoBall, BingoClaim } from '@/types/bingo';
+import { BingoBall, BingoClaim, BingoLetter } from '@/types/bingo';
 import {
   RotateCcw,
-  Sparkles,
-  Users,
-  Timer,
+
   Play,
   Pause,
   ExternalLink,
@@ -39,7 +37,7 @@ export default function AdminPage() {
   const autoDrawTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Real-time synchronization
-  const { gameState, claims, dataDir, isConnected, refresh } = useBingoSync({
+  const { gameState, claims, dataDir, isConnected } = useBingoSync({
     onBallDrawn: (ball: BingoBall) => {
       if (soundEnabled) playBallDrawSound();
       if (voiceEnabled) speakBall(ball.letter, ball.number);
@@ -62,6 +60,7 @@ export default function AdminPage() {
   const calledNumbers = gameState?.calledNumbers || [];
   const currentBall = gameState?.currentBall || null;
   const allBallsDrawn = calledNumbers.length >= 75;
+  const isAutoDrawRunning = isAutoDrawActive && !allBallsDrawn;
 
   // Previous balls in reverse chronological order (excluding the current one)
   const previousBalls: BingoBall[] = React.useMemo(() => {
@@ -71,7 +70,7 @@ export default function AdminPage() {
     // slice off the latest one
     const prevNumbers = calls.slice(0, -1).reverse();
     return prevNumbers.map((num) => {
-      let letter: any = 'B';
+      let letter: BingoLetter = 'B';
       if (num > 15 && num <= 30) letter = 'I';
       else if (num > 30 && num <= 45) letter = 'N';
       else if (num > 45 && num <= 60) letter = 'G';
@@ -81,7 +80,7 @@ export default function AdminPage() {
   }, [gameState]);
 
   // Draw Next Ball action
-  const handleDrawNext = async () => {
+  const handleDrawNext = useCallback(async () => {
     if (isDrawing || allBallsDrawn) return;
     setIsDrawing(true);
     setActionError(null);
@@ -94,13 +93,13 @@ export default function AdminPage() {
       if (!res.ok) {
         throw new Error(data.message || data.error || 'Failed to draw ball');
       }
-    } catch (err: any) {
-      console.error('Error drawing ball:', err);
-      setActionError(err.message || 'Error drawing ball');
+    } catch (error: unknown) {
+      console.error('Error drawing ball:', error);
+      setActionError(error instanceof Error ? error.message : 'Error drawing ball');
     } finally {
       setIsDrawing(false);
     }
-  };
+  }, [isDrawing, allBallsDrawn]);
 
   // Reset Game action
   const handleResetGame = async () => {
@@ -114,8 +113,8 @@ export default function AdminPage() {
         throw new Error('Failed to reset game');
       }
       setShowResetConfirm(false);
-    } catch (err: any) {
-      setActionError(err.message || 'Error resetting game');
+    } catch (error: unknown) {
+      setActionError(error instanceof Error ? error.message : 'Error resetting game');
     }
   };
 
@@ -133,14 +132,14 @@ export default function AdminPage() {
       if (!res.ok) {
         throw new Error('Failed to update claim');
       }
-    } catch (err: any) {
-      console.error('Error updating claim:', err);
+    } catch (error: unknown) {
+      console.error('Error updating claim:', error);
     }
   };
 
   // Auto-Draw ticker
   useEffect(() => {
-    if (isAutoDrawActive && !allBallsDrawn) {
+    if (isAutoDrawRunning) {
       autoDrawTimerRef.current = setInterval(() => {
         handleDrawNext();
       }, autoDrawIntervalSec * 1000);
@@ -156,14 +155,7 @@ export default function AdminPage() {
         clearInterval(autoDrawTimerRef.current);
       }
     };
-  }, [isAutoDrawActive, autoDrawIntervalSec, allBallsDrawn]);
-
-  // If all balls are drawn, stop auto-draw
-  useEffect(() => {
-    if (allBallsDrawn && isAutoDrawActive) {
-      setIsAutoDrawActive(false);
-    }
-  }, [allBallsDrawn, isAutoDrawActive]);
+  }, [isAutoDrawRunning, autoDrawIntervalSec, handleDrawNext]);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-slate-950">
@@ -211,20 +203,20 @@ export default function AdminPage() {
             <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
               <button
                 type="button"
-                onClick={() => setIsAutoDrawActive(!isAutoDrawActive)}
+                onClick={() => setIsAutoDrawActive(!isAutoDrawRunning)}
                 disabled={allBallsDrawn}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  isAutoDrawActive
+                  isAutoDrawRunning
                     ? 'bg-amber-500 text-slate-950 shadow-md'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
                 title="Toggle automatic timed ball draw"
               >
-                {isAutoDrawActive ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                {isAutoDrawActive ? 'Auto: ON' : 'Auto Draw'}
+                {isAutoDrawRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                {isAutoDrawRunning ? 'Auto: ON' : 'Auto Draw'}
               </button>
 
-              {isAutoDrawActive && (
+              {isAutoDrawRunning && (
                 <select
                   value={autoDrawIntervalSec}
                   onChange={(e) => setAutoDrawIntervalSec(Number(e.target.value))}

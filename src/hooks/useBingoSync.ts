@@ -15,11 +15,14 @@ export function useBingoSync(options: UseBingoSyncOptions = {}) {
   const [claims, setClaims] = useState<BingoClaim[]>([]);
   const [dataDir, setDataDir] = useState<string>('/data/bingo');
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [lastEventTime, setLastEventTime] = useState<number>(Date.now());
+  const [lastEventTime, setLastEventTime] = useState(0);
 
   // Store options in ref to avoid re-triggering effect on every render
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
 
   // Manual fallback refresh
   const refresh = useCallback(async () => {
@@ -134,12 +137,15 @@ export function useBingoSync(options: UseBingoSyncOptions = {}) {
     };
 
     // Initial fetch in case SSE takes a moment
-    refresh();
+    const initialFetchTimeout = setTimeout(() => {
+      void refresh();
+    }, 0);
     connect();
 
     return () => {
       isCancelled = true;
       clearTimeout(reconnectTimeout);
+      clearTimeout(initialFetchTimeout);
       if (eventSource) {
         eventSource.close();
       }

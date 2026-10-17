@@ -54,7 +54,7 @@ All state is stored as standard JSON files directly using Node.js `fs/promises`:
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ (tested on Node v24)
+- Node.js 20.9+ (tested on Node v24)
 - npm 9+
 
 ### Installation & Run

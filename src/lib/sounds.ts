@@ -8,7 +8,9 @@ let audioCtx: AudioContext | null = null;
 function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
   if (!audioCtx) {
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (AudioContextClass) {
       audioCtx = new AudioContextClass();
     }
@@ -54,7 +56,7 @@ export function playDaubSound(isMarking = true) {
       osc.start(now);
       osc.stop(now + 0.11);
     }
-  } catch (err) {
+  } catch {
     // Ignore audio autoplay restrictions
   }
 }
@@ -98,7 +100,7 @@ export function playBallDrawSound() {
       osc.start(dropTime + idx * 0.04);
       osc.stop(dropTime + idx * 0.04 + 0.5);
     });
-  } catch (err) {
+  } catch {
     // Audio autoplay restrictions
   }
 }
@@ -127,7 +129,7 @@ export function playBingoAlertSound() {
       osc.start(startT);
       osc.stop(startT + 0.4);
     });
-  } catch (err) {
+  } catch {
     // Audio restriction
   }
 }
@@ -162,7 +164,7 @@ export function playVictoryFanfare() {
       osc.start(startT);
       osc.stop(startT + note.duration + 0.05);
     });
-  } catch (err) {
+  } catch {
     // Audio restriction
   }
 }
@@ -179,7 +181,7 @@ export function speakBall(letter: string, number: number) {
     utterance.pitch = 1.1;
     utterance.volume = 0.9;
     window.speechSynthesis.speak(utterance);
-  } catch (err) {
+  } catch {
     // speech synthesis unavailable or disabled
   }
 }

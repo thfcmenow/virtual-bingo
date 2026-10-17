@@ -5,9 +5,10 @@ export const dynamic = 'force-dynamic';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { row, col, daubed } = await req.json();
 
     if (
@@ -21,7 +22,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid coordinates' }, { status: 400 });
     }
 
-    const player = await getPlayer(params.id);
+    const player = await getPlayer(id);
     if (!player) {
       return NextResponse.json({ error: 'Player not found' }, { status: 404 });
     }
