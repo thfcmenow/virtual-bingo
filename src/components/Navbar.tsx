@@ -7,12 +7,12 @@ import { Shield, User, HardDrive } from 'lucide-react';
 
 interface NavbarProps {
   isConnected?: boolean;
-  dataDir?: string;
+  storageBackend?: string;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   isConnected = true,
-  dataDir = '/data/bingo',
+  storageBackend = 'Neon Postgres',
 }) => {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
@@ -46,11 +46,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Storage Directory Indicator */}
           <div
             className="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800 font-mono"
-            title={`Persistent JSON data stored at ${dataDir}`}
+            title={`Persistent data stored in ${storageBackend}`}
           >
             <HardDrive className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-slate-500">Storage:</span>
-            <span className="text-slate-300 truncate max-w-[150px]">{dataDir}</span>
+            <span className="text-slate-500">Database:</span>
+            <span className="text-slate-300 truncate max-w-[150px]">{storageBackend}</span>
           </div>
 
           {/* SSE Live Status Indicator */}

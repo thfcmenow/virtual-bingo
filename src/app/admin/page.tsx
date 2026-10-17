@@ -37,7 +37,7 @@ export default function AdminPage() {
   const autoDrawTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Real-time synchronization
-  const { gameState, claims, dataDir, isConnected } = useBingoSync({
+  const { gameState, claims, storageBackend, isConnected } = useBingoSync({
     onBallDrawn: (ball: BingoBall) => {
       if (soundEnabled) playBallDrawSound();
       if (voiceEnabled) speakBall(ball.letter, ball.number);
@@ -159,7 +159,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-slate-950">
-      <Navbar isConnected={isConnected} dataDir={dataDir} />
+      <Navbar isConnected={isConnected} storageBackend={storageBackend} />
 
       {/* Real-time incoming Bingo Alert Flash Banner */}
       {newClaimAlert && (
@@ -298,9 +298,8 @@ export default function AdminPage() {
               <h3 className="text-lg font-bold text-white">Reset Current Game?</h3>
             </div>
             <p className="text-sm text-slate-300 mb-6">
-              This will wipe all {calledNumbers.length} called numbers, clear active claims in{' '}
-              <code className="text-amber-400 text-xs">/data/bingo/game-state.json</code>, and notify all
-              connected players that a new game has started.
+              This will wipe all {calledNumbers.length} called numbers, clear active claims from the database,
+              and notify all connected players that a new game has started.
             </p>
             <div className="flex items-center justify-end gap-3">
               <button

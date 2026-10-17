@@ -50,7 +50,7 @@ export interface SSEEventDataMap {
   INIT: {
     gameState: GameState;
     claims: BingoClaim[];
-    dataDir: string;
+    storageBackend: string;
   };
   BALL_DRAWN: {
     ball: BingoBall;

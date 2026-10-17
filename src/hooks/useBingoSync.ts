@@ -13,7 +13,7 @@ interface UseBingoSyncOptions {
 export function useBingoSync(options: UseBingoSyncOptions = {}) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [claims, setClaims] = useState<BingoClaim[]>([]);
-  const [dataDir, setDataDir] = useState<string>('/data/bingo');
+  const [storageBackend, setStorageBackend] = useState('Neon Postgres');
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [lastEventTime, setLastEventTime] = useState(0);
 
@@ -32,7 +32,7 @@ export function useBingoSync(options: UseBingoSyncOptions = {}) {
         const data = await res.json();
         setGameState(data.gameState);
         setClaims(data.claims || []);
-        if (data.dataDir) setDataDir(data.dataDir);
+        if (data.storageBackend) setStorageBackend(data.storageBackend);
       }
     } catch (err) {
       console.warn('[useBingoSync] Failed to fetch game state:', err);
@@ -63,7 +63,7 @@ export function useBingoSync(options: UseBingoSyncOptions = {}) {
               case 'INIT': {
                 setGameState(message.data.gameState);
                 setClaims(message.data.claims || []);
-                if (message.data.dataDir) setDataDir(message.data.dataDir);
+                if (message.data.storageBackend) setStorageBackend(message.data.storageBackend);
                 break;
               }
               case 'BALL_DRAWN': {
@@ -155,7 +155,7 @@ export function useBingoSync(options: UseBingoSyncOptions = {}) {
   return {
     gameState,
     claims,
-    dataDir,
+    storageBackend,
     isConnected,
     lastEventTime,
     refresh,

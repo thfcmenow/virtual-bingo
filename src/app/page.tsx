@@ -28,7 +28,7 @@ export default function PlayerPage() {
   const [submittedClaim, setSubmittedClaim] = useState<BingoClaim | null>(null);
 
   // SSE real-time state sync
-  const { gameState, claims, dataDir, isConnected } = useBingoSync({
+  const { gameState, claims, storageBackend, isConnected } = useBingoSync({
     onBallDrawn: () => {
       if (soundEnabled) playBallDrawSound();
     },
@@ -122,7 +122,7 @@ export default function PlayerPage() {
       daubed: newDaubed,
     });
 
-    // Persist daub change to /data/bingo/players/[playerId].json
+    // Persist the updated card in Neon Postgres
     try {
       await fetch(`/api/players/${player.id}/daub`, {
         method: 'PUT',
@@ -179,7 +179,7 @@ export default function PlayerPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-slate-950">
-      <Navbar isConnected={isConnected} dataDir={dataDir} />
+      <Navbar isConnected={isConnected} storageBackend={storageBackend} />
 
       {/* Main Content */}
       <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col items-center space-y-6">
@@ -227,7 +227,7 @@ export default function PlayerPage() {
 
             <div className="mt-6 pt-4 border-t border-slate-800 text-center">
               <p className="text-[11px] text-slate-500">
-                Your card persists in <code className="text-amber-400 font-mono">/data/bingo/players/</code>
+                Your card persists in Neon Postgres
               </p>
             </div>
           </div>

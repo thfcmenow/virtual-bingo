@@ -57,7 +57,7 @@ export const ClaimsPanel: React.FC<ClaimsPanelProps> = ({
               )}
             </h3>
             <p className="text-xs text-slate-400">
-              Instant alerts logged to <code className="text-amber-400">/data/bingo/claims.json</code>
+              Claims and audit snapshots are stored in Neon Postgres
             </p>
           </div>
         </div>
