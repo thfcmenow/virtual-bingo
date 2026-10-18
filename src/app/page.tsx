@@ -122,7 +122,7 @@ export default function PlayerPage() {
       daubed: newDaubed,
     });
 
-    // Persist the updated card in Neon Postgres
+    // Persist the updated card through the configured storage backend
     try {
       await fetch(`/api/players/${player.id}/daub`, {
         method: 'PUT',
@@ -227,7 +227,7 @@ export default function PlayerPage() {
 
             <div className="mt-6 pt-4 border-t border-slate-800 text-center">
               <p className="text-[11px] text-slate-500">
-                Your card persists in Neon Postgres
+                Your card is saved using the configured storage backend
               </p>
             </div>
           </div>

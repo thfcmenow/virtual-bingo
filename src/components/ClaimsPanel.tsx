@@ -57,7 +57,7 @@ export const ClaimsPanel: React.FC<ClaimsPanelProps> = ({
               )}
             </h3>
             <p className="text-xs text-slate-400">
-              Claims and audit snapshots are stored in Neon Postgres
+              Claims and audit snapshots use the configured storage backend
             </p>
           </div>
         </div>

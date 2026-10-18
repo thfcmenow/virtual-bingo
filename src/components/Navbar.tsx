@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             title={`Persistent data stored in ${storageBackend}`}
           >
             <HardDrive className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-slate-500">Database:</span>
+            <span className="text-slate-500">Storage:</span>
             <span className="text-slate-300 truncate max-w-[150px]">{storageBackend}</span>
           </div>
 

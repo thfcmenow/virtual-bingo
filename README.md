@@ -42,12 +42,12 @@ A full-stack, real-time Virtual Bingo web application built with **Next.js (App 
 
 ## 🗄️ Data Persistence Architecture
 
-Game state, player cards, daubs, and claims are persisted in Neon Postgres through Drizzle ORM:
-- `bingo_game_state`: the current session and called balls, stored as JSONB.
-- `bingo_players`: player profiles, cards, and daub matrices, stored as JSONB.
-- `bingo_claims`: claims and audit snapshots, with indexed player and timestamp fields.
+Game state, player cards, daubs, and claims are saved by the server-side storage adapter. Select the backend with `ENVIRONMENT`:
 
-The app uses the pooled `DATABASE_URL` for runtime queries. Drizzle migrations use the direct `DATABASE_URL_UNPOOLED` connection. Neon CLI writes both to the ignored `.env.local` file; on Render, add `DATABASE_URL` as a secret environment variable. Apply schema migrations with `npm run db:migrate` and generate new migration files with `npm run db:generate`.
+- `DEFAULT` (also used when `ENVIRONMENT` is unset): Neon Postgres through Drizzle ORM. It stores game state, player data, and claims in the `bingo_game_state`, `bingo_players`, and `bingo_claims` tables.
+- `DRIVE`: a JSON data file at `/data/virutalbingo/bingo.json`. Set `DRIVE_STORAGE_PATH` to override the directory when needed. The target directory must be writable and on persistent storage (for example, a mounted volume); the filesystem backend does not require a database connection.
+
+The app uses the pooled `DATABASE_URL` for runtime queries in `DEFAULT` mode. Drizzle migrations use the direct `DATABASE_URL_UNPOOLED` connection. Neon CLI writes both to the ignored `.env.local` file; on Render, add `DATABASE_URL` as a secret environment variable when using `DEFAULT`. Apply schema migrations with `npm run db:migrate` and generate new migration files with `npm run db:generate`.
 
 ---
 
